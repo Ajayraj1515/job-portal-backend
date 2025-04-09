@@ -1,14 +1,17 @@
-// config/db.js
 const mysql = require('mysql2');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const pool = mysql.createPool({
+const db = mysql.createConnection({
   host: 'localhost',
-  user: 'your_username',       // ✅ Use your local MySQL username
-  password: 'Ajayraj@1515',    // ✅ Your MySQL password
-  database: 'job_portal',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  user: 'root',
+  password: process.env.DB_PASSWORD,
+  database: 'job_admin_db'
 });
 
-module.exports = pool.promise();
+db.connect((err) => {
+  if (err) throw err;
+  console.log('MySQL Connected...');
+});
+
+module.exports = db;

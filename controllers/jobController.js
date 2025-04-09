@@ -1,30 +1,41 @@
-// controllers/jobController.js
 const db = require('../config/db');
 
-exports.getAllJobs = async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM jobs');
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+exports.getJobs = (req, res) => {
+  const sql = 'SELECT * FROM jobs';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results);
+  });
 };
 
-exports.createJob = async (req, res) => {
-  const { title, description, location } = req.body;
-  try {
-    const [result] = await db.query(
-      'INSERT INTO jobs (title, description, location) VALUES (?, ?, ?)',
-      [title, description, location]
-    );
-    res.status(201).json({
-      id: result.insertId,
-      title,
-      description,
-      location,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+exports.createJob = (req, res) => {
+  const {
+    job_title,
+    company_name,
+    location,
+    job_type,
+    salary_range,
+    job_description,
+    requirements,
+    responsibilities,
+    application_deadline
+  } = req.body;
+
+  const sql = `INSERT INTO jobs (job_title, company_name, location, job_type, salary_range, job_description, requirements, responsibilities, application_deadline)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(sql, [
+    job_title,
+    company_name,
+    location,
+    job_type,
+    salary_range,
+    job_description,
+    requirements,
+    responsibilities,
+    application_deadline
+  ], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Job created successfully!' });
+  });
 };
-console.log('Finished executing jobController.js. Exports set.');
